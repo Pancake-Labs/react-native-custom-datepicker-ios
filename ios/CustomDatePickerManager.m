@@ -45,6 +45,9 @@ RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, CustomDatePicker)
 {
   UIColor *textColor = json ? [[UIColor alloc] initWithCGColor:[RCTConvert CGColor:json]] : [UIColor blackColor];
   [view setValue:textColor forKeyPath:@"textColor"];
+  if ([view respondsToSelector:sel_registerName("setHighlightsToday:")]) {
+    [view performSelector:@selector(setHighlightsToday:) withObject:[NSNumber numberWithBool:NO]];
+  }
 }
 
 @end
