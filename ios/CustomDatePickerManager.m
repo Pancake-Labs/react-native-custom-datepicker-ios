@@ -43,8 +43,32 @@ RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, CustomDatePicker)
 {
+  if(@available(ios 14,*)) {
+    SEL setPreferredDatePickerStyleSelector = sel_registerName("setPreferredDatePickerStyle:");
+    if ([view respondsToSelector:setPreferredDatePickerStyleSelector]) {
+      // you cannot use a selector here as setPreferredDatePickerStyle expects a value type
+      // and dynamic calls via selectors require reference-typed arguments under ARC
+      NSMethodSignature *methodSignature = [view methodSignatureForSelector:setPreferredDatePickerStyleSelector];
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+      [invocation setSelector:setPreferredDatePickerStyleSelector];
+
+      NSInteger style = UIDatePickerStyleWheels;
+
+      // index 0,1 are reserved for super, self
+      [invocation setArgument:&style atIndex:2];
+
+      [invocation invokeWithTarget:view];
+    }
+  }
+
   UIColor *textColor = json ? [[UIColor alloc] initWithCGColor:[RCTConvert CGColor:json]] : [UIColor blackColor];
   [view setValue:textColor forKeyPath:@"textColor"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  if ([view respondsToSelector:sel_registerName("setHighlightsToday:")]) {
+    [view performSelector:@selector(setHighlightsToday:) withObject:[NSNumber numberWithBool:NO]];
+  }
+#pragma clang diagnostic pop
 }
 
 @end
