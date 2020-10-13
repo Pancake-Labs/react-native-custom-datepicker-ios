@@ -1,7 +1,7 @@
 /**
  * @flow 
  */
-import React from 'react';
+import React, {Component} from 'react';
 import {
   ColorPropType,
   requireNativeComponent,
@@ -10,7 +10,6 @@ import {
   ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import createReactClass from 'create-react-class';
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime',
@@ -25,12 +24,12 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-const DatePickerIOS = createReactClass({
-  displayName: 'DatePickerIOS',
+class DatePickerIOS extends Component {
+  static displayName = 'DatePickerIOS';
   // TOOD: Put a better type for _picker
-  _picker: (undefined: ?$FlowFixMe),
+  static _picker = (undefined: ?$FlowFixMe);
 
-  propTypes: {
+  static propTypes = {
     ...ViewPropTypes,
     /**
      * The currently selected date.
@@ -90,16 +89,14 @@ const DatePickerIOS = createReactClass({
      * instance, to show times in Pacific Standard Time, pass -7 * 60.
      */
     timeZoneOffsetInMinutes: PropTypes.number,
-  },
+  };
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      mode: 'datetime',
-      textColor: '#000',
-    };
-  },
+  static defaultProps = {
+    mode: 'datetime',
+    textColor: '#000',
+  };
 
-  _onChange: function(event: Event) {
+  _onChange = (event: Event) => {
     const nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
       new Date(nativeTimeStamp)
@@ -117,9 +114,13 @@ const DatePickerIOS = createReactClass({
         date: propsTimeStamp,
       });
     }
-  },
+  };
 
-  render: function() {
+  constructor(props) {
+    super(props);
+  }
+
+  render = function() {
     const props = this.props;
     return (
       <View style={props.style}>
@@ -145,7 +146,7 @@ const DatePickerIOS = createReactClass({
       </View>
     );
   }
-});
+};
 
 const styles = StyleSheet.create({
   datePickerIOS: {
